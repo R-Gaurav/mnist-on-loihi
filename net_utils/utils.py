@@ -108,7 +108,7 @@ class PyMnistImgToSpkOnCpu(PyLoihiProcessModel):
     self.inp_img = img/255
     self.ground_truth_label = self.mnist_dset.test_labels[self.curr_img_id]
     self.lbl_out.send(np.array([self.ground_truth_label]))
-    self.v = np.zeros(self.v.shape, dtype=float) # zeros_like doesn't work??
+    self.v = np.zeros(self.v.shape, dtype=float)
     self.curr_img_id += 1
 
   def run_spk(self):
