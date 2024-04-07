@@ -213,7 +213,7 @@ class PyInputAdapter(PyLoihiProcessModel):
     self.out.send(self.inp.recv())
 
 ###############################################################################
-################# O T P    A D A P T E R    P R O C E S S #####################
+################# O U T    A D A P T E R    P R O C E S S #####################
 ###############################################################################
 
 class OutputAdapter(AbstractProcess):
