@@ -6,14 +6,15 @@ import torch
 import lava.lib.dl.slayer as slayer
 
 from lava.proc.monitor.process import Monitor
-from lava.magma.core.run_configs import Loihi2SimCfg, Loihi1SimCfg
+from lava.magma.core.run_configs import Loihi2SimCfg, Loihi2HwCfg
 from lava.magma.core.run_conditions import RunSteps
 from lava.lib.dl import netx
 from nengo_extras.plot_spikes import plot_spikes
 
 from net_utils.utils import (
     MnistImgToSpkOnCpu, PyMnistImgToSpkOnCpu, OutputProcess, PyOutputProcess,
-    InputAdapter, PyInputAdapter, OutputAdapter, PyOutputAdapter
+    InputAdapter, PyInputAdapter, NxInputAdapter,
+    OutputAdapter, PyOutputAdapter, NxOutputAdapter,
     )
 
 # Following class is implemented via Slayer APIs.
@@ -95,12 +96,41 @@ class LavaDenseSNN(object):
     # -- Output Adapter.
     self.otp_adp = OutputAdapter(shape=self.net.out.shape)
 
-  def infer_on_loihi_sim(self):
+  def get_run_config(self, backend):
+    """
+    Returns the run-time config corresponding to the `backend`.
+
+    Args:
+      backend <str>: Either "L2Sim" or "L2Hw" for Loihi2SimCfg or Loihi2HwCfg.
+    """
+    assert backend in ["L2Sim", "L2Hw"]
+
+    if backend == "L2Sim": # Run on the Loihi-2 Simulation Hardware on CPU.
+      run_config = Loihi2SimCfg(
+          exception_proc_model_map={
+            MnistImgToSpkOnCpu: PyMnistImgToSpkOnCpu,
+            PyOutputProcess: PyOutputProcess,
+            InputAdapter: PyInputAdapter,
+            OutputAdapter: PyOutputAdapter
+            }
+          )
+    elif backend == "L2Hw": # Run on the Loihi-2 Physical Hardware on INRC.
+      run_config = Loihi2HwCfg(
+          exception_proc_model_map={
+            PyMnistImgToSpkOnCpu: PyMnistImgToSpkOnCpu,
+            OutputProcess: PyOutputProcess,
+            InputAdapter: NxInputAdapter,
+            OutputAdapter: NxOutputAdapter
+            }
+          )
+    return run_config
+
+  def infer_on_loihi_sim(self, backend):
     """
     Run inference on Loihi-2 simulation. Note that the object is re-initialized.
 
     Args:
-      run_tsteps <int>: Number of time-steps to run.
+      backend <str>: Either "L2Sim" or "L2Hw" for Loihi2SimCfg or Loihi2HwCfg.
     """
     # Connect Processes.
     self.img_to_spk.spk_out.connect(self.inp_adp.inp)
@@ -111,16 +141,8 @@ class LavaDenseSNN(object):
     # Connect ImgToSpk Input directly to SpkToCls Output for ground truths.
     self.img_to_spk.lbl_out.connect(self.spk_to_cls.label_in)
 
-    # Define RunConfig, use Loihi2SimCfg to run on Loihi-2 simultion-hardware
-    # and use Loihi1SimCfg to run on Loihi-1 simulation-hardware.
-    run_config = Loihi2SimCfg(
-        exception_proc_model_map={
-            MnistImgToSpkOnCpu: PyMnistImgToSpkOnCpu,
-            OutputProcess: PyOutputProcess,
-            InputAdapter: PyInputAdapter,
-            OutputAdapter: PyOutputAdapter
-            }
-        )
+    # Get RunConfig based on the `backend`.
+    run_config = self.get_run_config(backend=backend)
 
     # E I T H E R     E X E C U T E     T H E     F O L L O W I N G     OR
     ###########################################################################

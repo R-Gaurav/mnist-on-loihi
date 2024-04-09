@@ -4,14 +4,19 @@ from torch.utils.data import Dataset
 
 from lava.magma.core.decorator import implements, requires
 from lava.magma.core.model.py.model import PyLoihiProcessModel
+from lava.magma.core.model.sub.model import AbstractSubProcessModel
 from lava.magma.core.model.py.type import LavaPyType
 from lava.magma.core.model.py.ports import PyInPort, PyOutPort
 from lava.magma.core.process.process import AbstractProcess
 from lava.magma.core.process.variable import Var
 from lava.magma.core.process.ports.ports import InPort, OutPort
 from lava.magma.core.sync.protocols.loihi_protocol import LoihiProtocol
-from lava.magma.core.resources import CPU
+from lava.magma.core.resources import CPU, Loihi2NeuroCore
 from lava.utils.dataloader.mnist import MnistDataset
+
+from lava.utils.system import Loihi2
+if Loihi2.is_loihi2_available:
+  from lava.proc import embedded_io as eio
 
 class ExpDataset(Dataset):
   def __init__(self, is_train, n_tsteps, gain=1, bias=0):
@@ -212,6 +217,20 @@ class PyInputAdapter(PyLoihiProcessModel):
   def run_spk(self):
     self.out.send(self.inp.recv())
 
+@implements(proc=InputAdapter, protocol=LoihiProtocol)
+@requires(Loihi2NeuroCore)
+class NxInputAdapter(AbstractSubProcessModel):
+  """
+  Input adapter model for Loihi-2.
+  """
+  def __init__(self, proc: AbstractProcess):
+    self.inp: PyInPort = LavaPyType(np.ndarray, np.int32)
+    self.out: PyOutPort = LavaPyType(np.ndarray, np.int32)
+    shape = proc.proc_params.get("shape")
+    self.adapter = eio.spike.PyToNxAdapter(shape=shape)
+    proc.inp.connect(self.adapter.inp)
+    self.adapter.out.connect(proc.out)
+
 ###############################################################################
 ################# O U T    A D A P T E R    P R O C E S S #####################
 ###############################################################################
@@ -237,3 +256,18 @@ class PyOutputAdapter(PyLoihiProcessModel):
 
   def run_spk(self):
     self.out.send(self.inp.recv())
+
+@implements(proc=OutputAdapter, protocol=LoihiProtocol)
+@requires(Loihi2NeuroCore)
+class NxOutputAdapter(AbstractSubProcessModel):
+  """
+  Output adapter mode for Loihi-2.
+  """
+  def __init__(self, proc:AbstractProcess):
+    self.inp: PyInPort = LavaPyType(np.ndarray, np.int32)
+    self.out: PyOutPort = LavaPyType(np.ndarray, np.int32)
+
+    shape = proc.proc_params.get("shape")
+    self.adapter = eio.spike.NxToPyAdapter(shape=shape)
+    proc.inp.connect(self.adapter.inp)
+    self.adapter.out.connect(proc.out)
