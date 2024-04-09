@@ -78,7 +78,7 @@ if __name__=="__main__":
         )
     lava_snn.infer_on_loihi_sim()
 
-  elif args.backend == "L2Sim" or arg.backend == "L2Hw":
+  elif args.backend == "L2Sim" or args.backend == "L2Hw":
     try:
       assert os.path.isfile("./trained_mnist_network.net")
     except:
@@ -93,7 +93,7 @@ if __name__=="__main__":
         "./trained_mnist_network.net",
         img_shape=784,
         n_tsteps=args.n_tsteps,
-        st_img_id=0, # Start evaluating from the frist test image.
-        num_test_imgs=arg.num_test_imgs,
+        st_img_id=50, # Start evaluating from the frist test image.
+        num_test_imgs=args.num_test_imgs,
         )
     lava_snn.infer_on_loihi_sim(args.backend)
