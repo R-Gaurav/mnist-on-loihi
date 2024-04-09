@@ -57,29 +57,15 @@ if __name__=="__main__":
   device = "cuda" if torch.cuda.is_available() else "cpu"
   parser = argparse.ArgumentParser()
   parser.add_argument("--epochs",type=int, default=25, required=False)
-  parser.add_argument("--n_tsteps", type=int, default=40, required=False)
-  parser.add_argument(
-      "--eval_on_loihi_sim", action=argparse.BooleanOptionalAction)
+  parser.add_argument("--n_tsteps", type=int, default=32, required=False)
+  parser.add_argument("--backend", type=str, default="GPU", required=False)
+  parser.add_argument("--num_test_imgs", type=int, default=25, required=False)
 
   args = parser.parse_args()
 
-  if args.eval_on_loihi_sim:
-    # Only Evaluate the trained network on Loihi-1/2 Simulation hardware.
-    try:
-      assert os.path.isfile("./trained_mnist_network.net")
-    except:
-      sys.exit("First train the network to obtain the trained weights.")
-
-    print("Evaluating the SNN on Loihi Simulation Hardware.")
-    lava_snn = LavaDenseSNN(
-        "./trained_mnist_network.net",
-        img_shape=784,
-        n_tsteps=args.n_tsteps,
-        st_img_id=0,
-        num_test_imgs=100,
-        )
-    lava_snn.infer_on_loihi_sim()
-  else: # Train, Test, and Evaluate the trained network on Loihi-1/2 Simulation.
+  if args.backend == "GPU":
+    print("Training and Evaluating SlayerDenseSNN on GPU, and LavaDenseSNN on "
+          "Loihi-2 Simulation Hardware on CPU.")
     tes = TrainEvalSNN(
         device=device, epochs=args.epochs, n_tsteps=args.n_tsteps)
     tes.train_eval_snn()
@@ -87,7 +73,27 @@ if __name__=="__main__":
         "./trained_mnist_network.net",
         img_shape=784,
         n_tsteps=args.n_tsteps,
-        st_img_id=0,
-        num_test_imgs=100,
+        st_img_id=0, # Start evaluating from the 1st test image.
+        num_test_imgs=args.num_test_imgs,
         )
     lava_snn.infer_on_loihi_sim()
+
+  elif args.backend == "L2Sim" or arg.backend == "L2Hw":
+    try:
+      assert os.path.isfile("./trained_mnist_network.net")
+    except:
+      sys.exit(
+          "First train SlayerDenseSNN on GPU to obtain trained weights. Exit..")
+
+    if args.backend == "L2Sim":
+      print("Only evaluating the LavaDenseSNN on Loihi-2 Simulation Hardware.")
+    elif args.backend == "L2Hw":
+      print("Only evaluating the LavaDenseSNN on Loihi-2 Physical Hardware.")
+    lava_snn = LavaDenseSNN(
+        "./trained_mnist_network.net",
+        img_shape=784,
+        n_tsteps=args.n_tsteps,
+        st_img_id=0, # Start evaluating from the frist test image.
+        num_test_imgs=arg.num_test_imgs,
+        )
+    lava_snn.infer_on_loihi_sim(args.backend)
