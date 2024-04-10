@@ -53,7 +53,7 @@ class ExpDataset(Dataset):
 #################### I N P U T    P R O C E S S #######################
 ###############################################################################
 
-class MnistImgToSpkOnCpu(AbstractProcess):
+class InpImgToSpk(AbstractProcess):
   """
   Input process to convert flattened images to binary spikes.
   """
@@ -69,11 +69,11 @@ class MnistImgToSpkOnCpu(AbstractProcess):
     self.v = Var(shape=(img_shape, ), init=0)
     self.vth = Var(shape=(1, ), init=v_thr)
 
-@implements(proc=MnistImgToSpkOnCpu, protocol=LoihiProtocol)
+@implements(proc=InpImgToSpk, protocol=LoihiProtocol)
 @requires(CPU)
-class PyMnistImgToSpkOnCpu(PyLoihiProcessModel):
+class PyInpImgToSpkModel(PyLoihiProcessModel):
   """
-  Python implementation for the above `MnistImgToSpkOnCpu` process.
+  Python implementation for the above `InpImgToSpk` process.
   """
   spk_out: PyOutPort = LavaPyType(PyOutPort.VEC_DENSE, bool, precision=1)
   lbl_out: PyOutPort = LavaPyType(PyOutPort.VEC_DENSE, np.int32, precision=32)
@@ -135,7 +135,7 @@ class PyMnistImgToSpkOnCpu(PyLoihiProcessModel):
 #################### O U T P U T    P R O C E S S #####################
 ###############################################################################
 
-class OutputProcess(AbstractProcess):
+class OutSpkToCls(AbstractProcess):
   """
   Output process to collect output neuron spikes and infer predicted class.
   """
@@ -148,9 +148,9 @@ class OutputProcess(AbstractProcess):
     self.pred_labels = Var(shape=(num_test_imgs, ))
     self.true_labels = Var(shape=(num_test_imgs, ))
 
-@implements(proc=OutputProcess, protocol=LoihiProtocol)
+@implements(proc=OutSpkToCls, protocol=LoihiProtocol)
 @requires(CPU)
-class PyOutputProcess(PyLoihiProcessModel):
+class PyOutSpkToClsModel(PyLoihiProcessModel):
   spikes_in: PyInPort = LavaPyType(PyInPort.VEC_DENSE, bool, precision=1)
   label_in: PyInPort = LavaPyType(PyInPort.VEC_DENSE, int, precision=32)
   spikes_accum: np.ndarray = LavaPyType(np.ndarray, np.int32, precision=32)

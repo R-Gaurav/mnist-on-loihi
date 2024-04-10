@@ -12,7 +12,7 @@ from lava.lib.dl import netx
 from nengo_extras.plot_spikes import plot_spikes
 
 from net_utils.utils import (
-    MnistImgToSpkOnCpu, PyMnistImgToSpkOnCpu, OutputProcess, PyOutputProcess,
+    InpImgToSpk, PyInpImgToSpkModel, OutSpkToCls, PyOutSpkToClsModel,
     InputAdapter, PyInputAdapter, NxInputAdapter,
     OutputAdapter, PyOutputAdapter, NxOutputAdapter,
     )
@@ -80,7 +80,7 @@ class LavaDenseSNN(object):
     self.num_test_imgs = num_test_imgs
     # Create Process Instances.
     # -- Spike Input Process.
-    self.img_to_spk = MnistImgToSpkOnCpu(
+    self.img_to_spk = InpImgToSpk(
         img_shape=img_shape, n_tsteps=n_tsteps, curr_img_id=st_img_id)
     # -- Lava Trained SNN portable to Loihi (either H/W or Simulation).
     self.net = netx.hdf5.Network(
@@ -89,7 +89,7 @@ class LavaDenseSNN(object):
         reset_offset=1
         )
     # -- Output Classification Process.
-    self.spk_to_cls = OutputProcess(
+    self.spk_to_cls = OutSpkToCls(
         n_tsteps=n_tsteps, num_test_imgs=num_test_imgs)
     # -- Input Adapter.
     self.inp_adp = InputAdapter(shape=self.net.inp.shape)
@@ -108,8 +108,8 @@ class LavaDenseSNN(object):
     if backend == "L2Sim": # Run on the Loihi-2 Simulation Hardware on CPU.
       run_config = Loihi2SimCfg(
           exception_proc_model_map={
-            MnistImgToSpkOnCpu: PyMnistImgToSpkOnCpu,
-            PyOutputProcess: PyOutputProcess,
+            InpImgToSpk: PyInpImgToSpkModel,
+            OutSpkToCls: PyOutSpkToClsModel,
             InputAdapter: PyInputAdapter,
             OutputAdapter: PyOutputAdapter
             }
@@ -117,8 +117,8 @@ class LavaDenseSNN(object):
     elif backend == "L2Hw": # Run on the Loihi-2 Physical Hardware on INRC.
       run_config = Loihi2HwCfg(
           exception_proc_model_map={
-            PyMnistImgToSpkOnCpu: PyMnistImgToSpkOnCpu,
-            OutputProcess: PyOutputProcess,
+            InpImgToSpk: PyInpImgToSpkModel,
+            OutSpkToCls: PyOutSpkToClsModel,
             InputAdapter: NxInputAdapter,
             OutputAdapter: NxOutputAdapter
             }
