@@ -14,9 +14,9 @@ based on maximally spiking output neurons.
 # Execution Command
 
 # Notes:
-
 There's no need to download MNIST dataset, the Lava-DL library comes furnished
 with it.
+
 ---
 
 The code in this repo is adapted from the Loihi tutorials on deploying MNIST
