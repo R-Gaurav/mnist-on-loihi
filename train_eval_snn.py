@@ -64,8 +64,8 @@ if __name__=="__main__":
   args = parser.parse_args()
 
   if args.backend == "GPU":
-    print("Training and Evaluating SlayerDenseSNN on GPU, and LavaDenseSNN on "
-          "Loihi-2 Simulation Hardware on CPU.")
+    print("Training and Evaluating SlayerDenseSNN on GPU ... AND,\n"
+          "Evaluating LavaDenseSNN on Loihi-2 Simulation Hardware on CPU.")
     tes = TrainEvalSNN(
         device=device, epochs=args.epochs, n_tsteps=args.n_tsteps)
     tes.train_eval_snn()
@@ -76,7 +76,7 @@ if __name__=="__main__":
         st_img_id=0, # Start evaluating from the 1st test image.
         num_test_imgs=args.num_test_imgs,
         )
-    lava_snn.infer_on_loihi_sim()
+    lava_snn.infer_on_loihi_sim(backend="L2Sim")
 
   elif args.backend == "L2Sim" or args.backend == "L2Hw":
     try:
