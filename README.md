@@ -10,6 +10,23 @@ binary spikes in the Input Layer via Rate Encoding, and classes are predicted
 based on maximally spiking output neurons.
 
 # Library Requirements:
+This tutorial was evaluated on the following libraries:
+```
+lava-dl                   0.5.0
+lava-dnf                  0.2.0
+lava-loihi                0.6.0
+lava-nc                   0.9.0
+lava-optimization         0.4.0
+lava-peripherals          0.1.0
+```
+To execute this tutorial on your machine you only need `lava-dl` and `lava-nc`
+which can be installed from
+[here](https://github.com/lava-nc/lava-dl?tab=readme-ov-file#installation). Do
+note that these two libraries will enable only training and evaluation on
+GPU/CPU.
+
+To execute this tutorial on actual Loihi hardware (on INRC), install rest of
+the above-mentioned libraries from your INRC account.
 
 # Execution Command
 
