@@ -125,9 +125,10 @@ class LavaDenseSNN(object):
           )
     return run_config
 
-  def infer_on_loihi_sim(self, backend):
+  def infer_on_loihi(self, backend):
     """
-    Run inference on Loihi-2 simulation. Note that the object is re-initialized.
+    Run inference on Loihi-2 Simulation or Physical Hardware, depending on
+    `backend` argument.
 
     Args:
       backend <str>: Either "L2Sim" or "L2Hw" for Loihi2SimCfg or Loihi2HwCfg.

@@ -76,7 +76,7 @@ if __name__=="__main__":
         st_img_id=0, # Start evaluating from the 1st test image.
         num_test_imgs=args.num_test_imgs,
         )
-    lava_snn.infer_on_loihi_sim(backend="L2Sim")
+    lava_snn.infer_on_loihi(backend="L2Sim")
 
   elif args.backend == "L2Sim" or args.backend == "L2Hw":
     try:
@@ -96,4 +96,4 @@ if __name__=="__main__":
         st_img_id=0, # Start evaluating from the 1st test image.
         num_test_imgs=args.num_test_imgs,
         )
-    lava_snn.infer_on_loihi_sim(args.backend)
+    lava_snn.infer_on_loihi(args.backend)
