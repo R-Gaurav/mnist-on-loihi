@@ -107,6 +107,7 @@ class LavaDenseSNN(object):
 
     if backend == "L2Sim": # Run on the Loihi-2 Simulation Hardware on CPU.
       run_config = Loihi2SimCfg(
+          select_tag="fixed_pt",
           exception_proc_model_map={
             InpImgToSpk: PyInpImgToSpkModel,
             OutSpkToCls: PyOutSpkToClsModel,
@@ -116,6 +117,7 @@ class LavaDenseSNN(object):
           )
     elif backend == "L2Hw": # Run on the Loihi-2 Physical Hardware on INRC.
       run_config = Loihi2HwCfg(
+          select_sub_proc_model=True,
           exception_proc_model_map={
             InpImgToSpk: PyInpImgToSpkModel,
             OutSpkToCls: PyOutSpkToClsModel,
