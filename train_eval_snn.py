@@ -93,7 +93,7 @@ if __name__=="__main__":
         "./trained_mnist_network.net",
         img_shape=784,
         n_tsteps=args.n_tsteps,
-        st_img_id=50, # Start evaluating from the frist test image.
+        st_img_id=0, # Start evaluating from the 1st test image.
         num_test_imgs=args.num_test_imgs,
         )
     lava_snn.infer_on_loihi_sim(args.backend)
