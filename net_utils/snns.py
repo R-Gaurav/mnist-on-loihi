@@ -9,7 +9,6 @@ from lava.proc.monitor.process import Monitor
 from lava.magma.core.run_configs import Loihi2SimCfg, Loihi2HwCfg
 from lava.magma.core.run_conditions import RunSteps
 from lava.lib.dl import netx
-from nengo_extras.plot_spikes import plot_spikes
 
 from net_utils.utils import (
     InpImgToSpk, PyInpImgToSpkModel, OutSpkToCls, PyOutSpkToClsModel,
