@@ -166,7 +166,7 @@ class PyOutSpkToClsModel(PyLoihiProcessModel):
     """
     Guard function for Post-Management phase.
     """
-    if self.time_step % self.n_ts == 0 and self.time_step > 1:
+    if self.time_step % self.n_ts == 0:
       return True
 
     return False
