@@ -60,7 +60,7 @@ class InpImgToSpk(AbstractProcess):
   def __init__(self, img_shape, n_tsteps, curr_img_id, v_thr=1):
     super().__init__()
     self.spk_out = OutPort(shape=(img_shape, ))
-    self.lbl_out = OutPort(shape=(1, ))
+    self.label_out = OutPort(shape=(1, ))
 
     self.curr_img_id = Var(shape=(1, ), init=curr_img_id)
     self.n_ts = Var(shape=(1, ), init=n_tsteps)
@@ -76,7 +76,7 @@ class PyInpImgToSpkModel(PyLoihiProcessModel):
   Python implementation for the above `InpImgToSpk` process.
   """
   spk_out: PyOutPort = LavaPyType(PyOutPort.VEC_DENSE, bool, precision=1)
-  lbl_out: PyOutPort = LavaPyType(PyOutPort.VEC_DENSE, np.int32, precision=32)
+  label_out: PyOutPort = LavaPyType(PyOutPort.VEC_DENSE, np.int32, precision=32)
 
   curr_img_id: int = LavaPyType(int, int, precision=32)
   n_ts: int = LavaPyType(int, int, precision=32)
@@ -112,7 +112,7 @@ class PyInpImgToSpkModel(PyLoihiProcessModel):
     img = self.mnist_dset.test_images[self.curr_img_id]
     self.inp_img = img/255
     self.ground_truth_label = self.mnist_dset.test_labels[self.curr_img_id]
-    self.lbl_out.send(np.array([self.ground_truth_label]))
+    self.label_out.send(np.array([self.ground_truth_label]))
     self.v = np.zeros(self.v.shape, dtype=float)
     self.curr_img_id += 1
 

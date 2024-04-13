@@ -143,7 +143,7 @@ class LavaDenseSNN(object):
     self.out_adp.out.connect(self.spk_to_cls.spikes_in)
 
     # Connect ImgToSpk Input directly to SpkToCls Output for ground truths.
-    self.img_to_spk.lbl_out.connect(self.spk_to_cls.label_in)
+    self.img_to_spk.label_out.connect(self.spk_to_cls.label_in)
 
     # Get RunConfig based on the `backend`.
     run_config = self.get_run_config(backend=backend)
