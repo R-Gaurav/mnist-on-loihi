@@ -221,7 +221,8 @@ class PyInputAdapter(PyLoihiProcessModel):
 @requires(Loihi2NeuroCore)
 class NxInputAdapter(AbstractSubProcessModel):
   """
-  Input adapter model for Loihi-2.
+  Input adapter model for Loihi-2, i.e., your spikes are generated on CPU and
+  you plan to send them to Loihi-2 neuro-cores.
   """
   def __init__(self, proc: AbstractProcess):
     self.inp: PyInPort = LavaPyType(np.ndarray, np.int32)
@@ -261,7 +262,8 @@ class PyOutputAdapter(PyLoihiProcessModel):
 @requires(Loihi2NeuroCore)
 class NxOutputAdapter(AbstractSubProcessModel):
   """
-  Output adapter mode for Loihi-2.
+  Output adapter mode for Loihi-2, i.e., your spikes are generated on Loihi-2
+  neuro-cores and you plan to send them to CPU.
   """
   def __init__(self, proc:AbstractProcess):
     self.inp: PyInPort = LavaPyType(np.ndarray, np.int32)
