@@ -99,7 +99,7 @@ class PyInpImgToSpkModel(PyLoihiProcessModel):
     Note: The execution control calls `post_guard()` after `run_spk()` every
     time-step, before updating the `self.time_step` variable to next time-step.
     """
-    if self.time_step % self.n_ts == 1: # n_tsteps time passed, 1 img processed.
+    if self.time_step % self.n_ts == 1: # n_ts steps passed, one image processed.
       return True
 
     return False
