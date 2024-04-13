@@ -172,5 +172,6 @@ class LavaDenseSNN(object):
     self.img_to_spk.stop()
     #print("Ground Truths: ", ground_truths)
     #print("Predicted Classes: ", predtd_clsses)
-    print("Accuracy on Loihi: ",
-        np.mean(np.array(ground_truths) == np.array(predtd_clsses)))
+    print("Accuracy on Loihi {0}: ".format(
+          "Simulation" if backend=="L2Sim" else "Board"),
+          np.mean(np.array(ground_truths) == np.array(predtd_clsses)))

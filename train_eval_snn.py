@@ -65,8 +65,10 @@ if __name__=="__main__":
   args = parser.parse_args()
 
   if args.backend == "GPU":
+    print("*"*80)
     print("Training and Evaluating SlayerDenseSNN on GPU ... AND,\n"
           "Evaluating LavaDenseSNN on Loihi-2 Simulation Hardware on CPU.")
+    print("*"*80)
     tes = TrainEvalSNN(
         device=device, epochs=args.epochs, n_tsteps=args.n_tsteps)
     tes.train_eval_snn()
@@ -83,13 +85,19 @@ if __name__=="__main__":
     try:
       assert os.path.isfile("./trained_mnist_network.net")
     except:
+      print("*"*80)
       sys.exit(
-          "First train SlayerDenseSNN on GPU to obtain trained weights. Exit..")
+          "First train SlayerDenseSNN on GPU to obtain trained weights. Exit.. "
+          "\n"+"*"*80)
 
     if args.backend == "L2Sim":
+      print("*"*80)
       print("Only evaluating the LavaDenseSNN on Loihi-2 Simulation Hardware.")
+      print("*"*80)
     elif args.backend == "L2Hw":
+      print("*"*80)
       print("Only evaluating the LavaDenseSNN on Loihi-2 Physical Hardware.")
+      print("*"*80)
     lava_snn = LavaDenseSNN(
         "./trained_mnist_network.net",
         img_shape=784,
