@@ -71,6 +71,8 @@ class LavaDenseSNN(object):
       trnd_net_path <str>: Trained network path.
       img_shape <int>: Shape of the flattened image.
       n_tsteps <int>: Presentation time-steps of each image.
+      st_img_id <int>: The index of the test-image to start testing onwards.
+      num_test_imgs <int>: Number of test images to test upon.
     """
     self.trnd_net_path = trnd_net_path
     self.img_shape = img_shape
@@ -83,9 +85,9 @@ class LavaDenseSNN(object):
         img_shape=img_shape, n_tsteps=n_tsteps, curr_img_id=st_img_id)
     # -- Lava Trained SNN portable to Loihi (either H/W or Simulation).
     self.net = netx.hdf5.Network(
-        net_config=trnd_net_path,
-        reset_interval=n_tsteps,
-        reset_offset=1
+        net_config=trnd_net_path, # Trained network path.
+        reset_interval=n_tsteps, # Presentation time-steps of each test-image.
+        reset_offset=1 # Phase shift / offset time-step to reset this network.
         )
     # -- Output Classification Process.
     self.spk_to_cls = OutSpkToCls(
@@ -106,7 +108,7 @@ class LavaDenseSNN(object):
 
     if backend == "L2Sim": # Run on the Loihi-2 Simulation Hardware on CPU.
       run_config = Loihi2SimCfg(
-          select_tag="fixed_pt",
+          select_tag="fixed_pt", # To select fixed point implementation.
           exception_proc_model_map={
             InpImgToSpk: PyInpImgToSpkModel,
             OutSpkToCls: PyOutSpkToClsModel,
@@ -156,7 +158,6 @@ class LavaDenseSNN(object):
     ###########################################################################
 
     # E X E C U T E     T H I S   --    C O M M E N T     O U T     O T H E R
-
     ###########################################################################
     # Execute the trained network on each image indvidually.
     for _ in range(self.num_test_imgs):
