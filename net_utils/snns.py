@@ -75,7 +75,7 @@ class LavaDenseSNN(object):
     """
     self.trnd_net_path = trnd_net_path
     self.img_shape = img_shape
-    self.n_tsteps = n_tsteps
+    self.n_ts = n_tsteps
     self.curr_img_id = st_img_id
     self.num_test_imgs = num_test_imgs
     # Create Process Instances.
@@ -94,7 +94,7 @@ class LavaDenseSNN(object):
     # -- Input Adapter.
     self.inp_adp = InputAdapter(shape=self.net.inp.shape)
     # -- Output Adapter.
-    self.otp_adp = OutputAdapter(shape=self.net.out.shape)
+    self.out_adp = OutputAdapter(shape=self.net.out.shape)
 
   def get_run_config(self, backend):
     """
@@ -138,8 +138,8 @@ class LavaDenseSNN(object):
     # Connect Processes.
     self.img_to_spk.spk_out.connect(self.inp_adp.inp)
     self.inp_adp.out.connect(self.net.inp)
-    self.net.out.connect(self.otp_adp.inp)
-    self.otp_adp.out.connect(self.spk_to_cls.spikes_in)
+    self.net.out.connect(self.out_adp.inp)
+    self.out_adp.out.connect(self.spk_to_cls.spikes_in)
 
     # Connect ImgToSpk Input directly to SpkToCls Output for ground truths.
     self.img_to_spk.lbl_out.connect(self.spk_to_cls.label_in)
@@ -151,7 +151,7 @@ class LavaDenseSNN(object):
     ###########################################################################
     # Execute the trained network on ALL the RUN_TSTEPS.
     #self.img_to_spk.run(
-    #    condition=RunSteps(num_steps=self.n_tsteps*self.num_test_imgs),
+    #    condition=RunSteps(num_steps=self.n_ts*self.num_test_imgs),
     #    run_cfg=run_config
     #    )
     ###########################################################################
@@ -162,7 +162,7 @@ class LavaDenseSNN(object):
     # Execute the trained network on each image indvidually.
     for _ in range(self.num_test_imgs):
       self.img_to_spk.run(
-        condition=RunSteps(num_steps=self.n_tsteps), run_cfg=run_config
+        condition=RunSteps(num_steps=self.n_ts), run_cfg=run_config
       )
     ###########################################################################
 
