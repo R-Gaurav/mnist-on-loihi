@@ -1,6 +1,6 @@
 Implementing MNIST classifiction on Loihi-2 Neuromorphic Chip -- both on
 Simulation Hardware and actual Physical Hardware (on [INRC](https://intel-ncl.atlassian.net/wiki/spaces/INRC/overview)) 
-through Lava library
+through Lava library; a detailed tutorial can be found [here](https://r-gaurav.github.io/2024/04/13/Lava-Tutorial-MNIST-Training-on-GPU-and-Evaluation-on-Loihi2.html).
 
 The SLAYER network is trained on GPU first and then the correspondng Lava
 network built from it is evaluated on the Loihi simulation (which runs on CPU),
