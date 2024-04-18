@@ -178,7 +178,7 @@ class PyOutSpkToClsModel(PyLoihiProcessModel):
     """
     true_label = self.label_in.recv()
     pred_label = np.argmax(self.spikes_accum)
-    self.true_labels[self.curr_idx] = true_label
+    self.true_labels[self.curr_idx] = true_label[0]
     self.pred_labels[self.curr_idx] = pred_label
     self.curr_idx += 1
     self.spikes_accum = np.zeros_like(self.spikes_accum)
